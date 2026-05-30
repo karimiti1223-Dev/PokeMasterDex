@@ -411,15 +411,206 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-wei
 
 
 </style>
+<script>
+const I18N = {
+  ja: {
+    title:'ポケモン軍師', subtitle:'対戦データ解析 & 型別育成論 & AP計算 & パーティ診断',
+    tab_search:'ポケモン検索', tab_rank:'ランキング', tab_type:'タイプ相性', tab_party:'パーティ診断',
+    search_ph:'例：ガブリアス、さざんどら、meganium…', search_btn:'検索',
+    search_hint:'ひらがな・カタカナ・部分一致OK',
+    top_usage:'使用率上位', add_party:'+ パーティに追加', party_max:'<span data-i18n="party_max">MY PARTY（最大6匹）</span>',
+    diag_btn:'🩺 パーティを診断する', vs_btn:'⚔ 対戦分析', save_btn:'💾 保存', clear_btn:'✕ クリア',
+    rank_filter:'全タイプ', rank_search_ph:'名前で絞り込み…',
+    sec_stats:'種族値 / 実数値', sec_data:'データ & 育成論',
+    sec_moves:'よく使われる技（ホバーで詳細表示）',
+    sec_items:'よく使われる持ち物（ホバーで詳細表示）',
+    sec_ev:'最多EV配分', sec_nature:'最多性格', sec_ability:'特性',
+    sec_type:'タイプ相性 & 対戦データ', sec_dmg:'ダメージ計算機',
+    dmg_atk:'攻撃/特攻実数値', dmg_pow:'技の威力', dmg_type:'技タイプ',
+    dmg_cls:'分類', dmg_stab:'タイプ一致', dmg_hp:'HP実数値',
+    dmg_def:'防御/特防実数値', dmg_weather:'天候', dmg_typeeff:'タイプ相性',
+    dmg_defability:'防御側特性', dmg_atkitem:'攻撃側持ち物',
+    dmg_crit:'急所(×1.5)', dmg_burn:'火傷(物理×0.5)', dmg_calc:'📊 ダメージを計算',
+    iku_label:'育成論（データベース）', tip_label:'使い方', tip_auto:'使い方（自動生成）',
+    build_label:'育成論（送付データより）',
+    weak_title:'タイプ相性 & 対戦データ',
+    weak_bad:'▼ 弱点（被ダメージ倍率）', weak_good:'▲ 耐性（被ダメージ倍率）',
+    weak_cov:'⚔ 自分の攻撃範囲（技から算出）',
+    danger_title:'⚠ 危険な相手（使用率上位100）',
+    good_title:'✅ 有利な相手（使用率上位100）',
+    notice:'⚠ データ出典：種族値・技・持ち物・EV・使用率・育成論テキストはすべて送付いただいたデータファイルをそのまま反映しています。',
+    lang_label:'言語',
+    type_checker:'タイプ相性チェッカー（攻撃→防御）',
+    type_checker_desc:'攻撃技のタイプが、防御側のタイプに何倍のダメージを与えるかを示します。',
+    party_coverage:'パーティのタイプカバレッジ',
+    all_types:'全タイプ相性表（攻撃↓ / 防御→）',
+    diag_str:'💪 強み', diag_weak:'⚠ 弱点', diag_comp:'📊 構成',
+    diag_tactic:'📋 基本立ち回り', diag_pick:'👥 選出パターン（詳細分析）',
+    diag_check:'✅ 対戦チェックリスト',
+    no_data:'データなし', loading:'読み込み中…',
+    bst:'合計',
+  },
+  en: {
+    title:'Pokémon Gunshi', subtitle:'Battle Data Analysis & Movesets & EV Calc & Team Builder',
+    tab_search:'Search', tab_rank:'Rankings', tab_type:'Type Chart', tab_party:'Team Diagnosis',
+    search_ph:'e.g. Garchomp, Dragonite, meganium…', search_btn:'Search',
+    search_hint:'Partial match OK',
+    top_usage:'Top Usage', add_party:'+ Add to Team', party_max:'MY PARTY (max 6)',
+    diag_btn:'🩺 Diagnose Team', vs_btn:'⚔ Battle Analysis', save_btn:'💾 Save', clear_btn:'✕ Clear',
+    rank_filter:'All Types', rank_search_ph:'Filter by name…',
+    sec_stats:'Base Stats / Actual Values', sec_data:'Data & Movesets',
+    sec_moves:'Common Moves (hover for details)',
+    sec_items:'Common Items (hover for details)',
+    sec_ev:'Common EV Spread', sec_nature:'Common Nature', sec_ability:'Ability',
+    sec_type:'Type Matchups & Battle Data', sec_dmg:'Damage Calculator',
+    dmg_atk:'Atk/Sp.Atk', dmg_pow:'Move Power', dmg_type:'Move Type',
+    dmg_cls:'Category', dmg_stab:'STAB', dmg_hp:'HP',
+    dmg_def:'Def/Sp.Def', dmg_weather:'Weather', dmg_typeeff:'Type Effectiveness',
+    dmg_defability:'Defender Ability', dmg_atkitem:'Attacker Item',
+    dmg_crit:'Critical (×1.5)', dmg_burn:'Burn (Phys×0.5)', dmg_calc:'📊 Calculate Damage',
+    iku_label:'Strategy Guide (Database)', tip_label:'How to Use', tip_auto:'How to Use (Auto)',
+    build_label:'Strategy (from data)',
+    weak_title:'Type Matchups & Battle Data',
+    weak_bad:'▼ Weaknesses', weak_good:'▲ Resistances',
+    weak_cov:'⚔ Offensive Coverage (from moves)',
+    danger_title:'⚠ Dangerous Opponents (Top 100)',
+    good_title:'✅ Favorable Matchups (Top 100)',
+    notice:'⚠ Data Source: All stats, moves, items, EVs, and usage rates are from submitted data files.',
+    lang_label:'Language',
+    type_checker:'Type Chart (Atk→Def)',
+    type_checker_desc:'Shows damage multipliers when attacking type vs defending type.',
+    party_coverage:'Party Type Coverage',
+    all_types:'Full Type Chart (Atk↓ / Def→)',
+    diag_str:'💪 Strengths', diag_weak:'⚠ Weaknesses', diag_comp:'📊 Composition',
+    diag_tactic:'📋 Battle Strategy', diag_pick:'👥 Recommended Leads (Detailed)',
+    diag_check:'✅ Battle Checklist',
+    no_data:'No data', loading:'Loading…',
+    bst:'BST',
+  },
+  zh: {
+    title:'宝可梦军师', subtitle:'对战数据分析 & 培育论 & 努力值计算 & 队伍诊断',
+    tab_search:'宝可梦搜索', tab_rank:'排名', tab_type:'属性克制', tab_party:'队伍诊断',
+    search_ph:'例：烈咬陆鲨、日本语名…', search_btn:'搜索',
+    search_hint:'支持部分匹配',
+    top_usage:'使用率前列', add_party:'+ 加入队伍', party_max:'我的队伍（最多6只）',
+    diag_btn:'🩺 诊断队伍', vs_btn:'⚔ 对战分析', save_btn:'💾 保存', clear_btn:'✕ 清除',
+    rank_filter:'全部属性', rank_search_ph:'按名称筛选…',
+    sec_stats:'种族值 / 实数值', sec_data:'数据 & 培育论',
+    sec_moves:'常用技能（悬停查看详情）',
+    sec_items:'常用道具（悬停查看详情）',
+    sec_ev:'常见努力值', sec_nature:'常见性格', sec_ability:'特性',
+    sec_type:'属性克制 & 对战数据', sec_dmg:'伤害计算器',
+    dmg_atk:'攻击/特攻实数', dmg_pow:'技能威力', dmg_type:'技能属性',
+    dmg_cls:'分类', dmg_stab:'属性一致', dmg_hp:'HP实数',
+    dmg_def:'防御/特防实数', dmg_weather:'天气', dmg_typeeff:'属性克制',
+    dmg_defability:'防御方特性', dmg_atkitem:'攻击方道具',
+    dmg_crit:'要害一击(×1.5)', dmg_burn:'灼伤(物理×0.5)', dmg_calc:'📊 计算伤害',
+    iku_label:'培育论（数据库）', tip_label:'使用方法', tip_auto:'使用方法（自动生成）',
+    build_label:'培育论（来自数据）',
+    weak_title:'属性克制 & 对战数据',
+    weak_bad:'▼ 弱点', weak_good:'▲ 抗性',
+    weak_cov:'⚔ 攻击覆盖（从技能计算）',
+    danger_title:'⚠ 危险对手（使用率前100）',
+    good_title:'✅ 有利对手（使用率前100）',
+    notice:'⚠ 数据来源：所有种族值、技能、道具、努力值及使用率均来自提交的数据文件。',
+    lang_label:'语言',
+    type_checker:'属性克制检查（攻→防）',
+    type_checker_desc:'显示攻击属性对防御属性造成的伤害倍数。',
+    party_coverage:'队伍属性覆盖',
+    all_types:'全属性克制表（攻↓ / 防→）',
+    diag_str:'💪 优势', diag_weak:'⚠ 弱点', diag_comp:'📊 构成',
+    diag_tactic:'📋 基本战术', diag_pick:'👥 出场方案（详细分析）',
+    diag_check:'✅ 对战检查清单',
+    no_data:'无数据', loading:'加载中…',
+    bst:'总和',
+  },
+  ko: {
+    title:'포켓몬 군사', subtitle:'배틀 데이터 분석 & 육성론 & 노력치 계산 & 파티 진단',
+    tab_search:'포켓몬 검색', tab_rank:'랭킹', tab_type:'타입 상성', tab_party:'파티 진단',
+    search_ph:'예: 한국어명 또는 일본어명…', search_btn:'검색',
+    search_hint:'부분 일치 지원',
+    top_usage:'사용률 상위', add_party:'+ 파티에 추가', party_max:'내 파티 (최대 6마리)',
+    diag_btn:'🩺 파티 진단', vs_btn:'⚔ 배틀 분석', save_btn:'💾 저장', clear_btn:'✕ 초기화',
+    rank_filter:'전체 타입', rank_search_ph:'이름으로 필터…',
+    sec_stats:'종족값 / 실수값', sec_data:'데이터 & 육성론',
+    sec_moves:'자주 쓰는 기술 (호버로 상세 표시)',
+    sec_items:'자주 쓰는 아이템 (호버로 상세 표시)',
+    sec_ev:'자주 쓰는 노력치', sec_nature:'자주 쓰는 성격', sec_ability:'특성',
+    sec_type:'타입 상성 & 배틀 데이터', sec_dmg:'데미지 계산기',
+    dmg_atk:'공격/특공 실수값', dmg_pow:'기술 위력', dmg_type:'기술 타입',
+    dmg_cls:'분류', dmg_stab:'타입 일치', dmg_hp:'HP 실수값',
+    dmg_def:'방어/특방 실수값', dmg_weather:'날씨', dmg_typeeff:'타입 상성',
+    dmg_defability:'수비측 특성', dmg_atkitem:'공격측 아이템',
+    dmg_crit:'급소(×1.5)', dmg_burn:'화상(물리×0.5)', dmg_calc:'📊 데미지 계산',
+    iku_label:'육성론 (데이터베이스)', tip_label:'사용 방법', tip_auto:'사용 방법 (자동 생성)',
+    build_label:'육성론 (데이터 기반)',
+    weak_title:'타입 상성 & 배틀 데이터',
+    weak_bad:'▼ 약점', weak_good:'▲ 내성',
+    weak_cov:'⚔ 공격 범위 (기술에서 계산)',
+    danger_title:'⚠ 위험한 상대 (사용률 상위 100)',
+    good_title:'✅ 유리한 상대 (사용률 상위 100)',
+    notice:'⚠ 데이터 출처: 모든 종족값, 기술, 아이템, 노력치 및 사용률은 제출된 데이터 파일에서 가져옵니다.',
+    lang_label:'언어',
+    type_checker:'타입 상성 체커 (공격→방어)',
+    type_checker_desc:'공격 타입이 방어 타입에 몇 배의 데미지를 주는지 표시합니다.',
+    party_coverage:'파티 타입 커버리지',
+    all_types:'전체 타입 상성표 (공↓ / 방→)',
+    diag_str:'💪 강점', diag_weak:'⚠ 약점', diag_comp:'📊 구성',
+    diag_tactic:'📋 기본 전술', diag_pick:'👥 출전 패턴 (상세 분석)',
+    diag_check:'✅ 배틀 체크리스트',
+    no_data:'데이터 없음', loading:'로딩 중…',
+    bst:'합계',
+  }
+};
+
+let LANG = localStorage.getItem('pkgunshi_lang') || 'ja';
+
+function t(key){ return (I18N[LANG]||I18N.ja)[key] || (I18N.ja)[key] || key; }
+
+function switchLang(lang){
+  LANG = lang;
+  localStorage.setItem('pkgunshi_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b.dataset.lang===lang));
+  applyI18n();
+}
+
+function applyI18n(){
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    const val = t(key);
+    if(el.placeholder !== undefined && el.dataset.i18nPh) el.placeholder = val;
+    else el.textContent = val;
+  });
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+  // Update html title
+  document.title = t('title') + ' — Pokémon Battle Tool';
+}
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  applyI18n();
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===LANG));
+});
+</script>
+
 </head>
 <body>
 <div class="wrap">
 
+<div class="lang-switcher">
+  <button class="lang-btn active" data-lang="ja" onclick="switchLang('ja')">🇯🇵 JP</button>
+  <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇺🇸 EN</button>
+  <button class="lang-btn" data-lang="zh" onclick="switchLang('zh')">🇨🇳 中文</button>
+  <button class="lang-btn" data-lang="ko" onclick="switchLang('ko')">🇰🇷 한국어</button>
+</div>
 <header class="hdr">
   <div class="hbadge">⚔ POKEMON GUNSHI — STRATEGIC COMMAND</div>
   <h1>ポケモン軍師</h1>
   <div class="hv">v9.0 — AI育成論生成対応版</div>
-  <p class="hsub">対戦データ解析 &amp; 型別育成論 &amp; AP計算 &amp; パーティ診断</p>
+  <p class="hsub"><span data-i18n="subtitle">対戦データ解析 &amp; 型別育成論 &amp; AP計算 &amp; パーティ診断</span></p>
   <div class="htags">
     <span class="htag g">🏆 全265体対応</span>
     <span class="htag b">📊 複数型データ収録</span>
@@ -436,20 +627,20 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-wei
 </div>
 
 <div class="main-tabs">
-  <button class="main-tab active" onclick="switchMain('search')">🔍 ポケモン検索</button>
-  <button class="main-tab" onclick="switchMain('ranking')">🏆 ランキング</button>
-  <button class="main-tab" onclick="switchMain('typechart')">🎯 タイプ相性</button>
-  <button class="main-tab" onclick="switchMain('party')">⚔ パーティ診断</button>
+  <button class="main-tab active" onclick="switchMain('search')"><span data-i18n='tab_search'>ポケモン検索</span></button>
+  <button class="main-tab" onclick="switchMain('ranking')"><span data-i18n='tab_rank'>ランキング</span></button>
+  <button class="main-tab" onclick="switchMain('typechart')"><span data-i18n='tab_type'>タイプ相性</span></button>
+  <button class="main-tab" onclick="switchMain('party')"><span data-i18n='tab_party'>パーティ診断</span></button>
 </div>
 
 <div class="tab-panel active" id="panel-search">
   <div class="sbox">
     <div class="swrap">
       <span class="sico">🔍</span>
-      <input class="sinp" id="sInp" type="text" placeholder="例：ガブリアス、さざんどら、やばそちゃ、meganium…" autocomplete="off"/>
+      <input class="sinp" id="sInp" type="text" placeholder="例：ガブリアス、さざんどら、やばそちゃ、meganium…" data-i18n-ph="search_ph" autocomplete="off"/>
       <div class="sgbox" id="sgBox"></div>
     </div>
-    <button class="sbtn" id="sBtn">検索</button>
+    <button class="sbtn" id="sBtn"><span data-i18n="search_btn">検索</span></button>
   </div>
   <div class="shint">💡 ひらがな・カタカナ・部分一致OK ／ ↑↓で候補選択・Enterで確定</div>
   <div class="quick">
@@ -483,7 +674,7 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-wei
   <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.85rem;align-items:center">
     <div style="font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:3px;color:var(--ac)">RANKING FILTER</div>
     <select id="rankFilter" class="ctrlsel" onchange="renderRanking()">
-      <option value="all">全タイプ</option>
+      <option value="all"><span data-i18n='rank_filter'>全タイプ</span></option>
       <option value="normal">ノーマル</option><option value="fire">ほのお</option>
       <option value="water">みず</option><option value="grass">くさ</option>
       <option value="electric">でんき</option><option value="ice">こおり</option>
@@ -502,7 +693,7 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-wei
 <!-- TYPE CHART PANEL -->
 <div class="tab-panel" id="panel-typechart">
   <div style="margin-bottom:.85rem">
-    <div style="font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:3px;color:var(--ac);margin-bottom:.5rem">タイプ相性チェッカー（攻撃→防御）</div>
+    <div style="font-family:'Orbitron',monospace;font-size:.6rem;letter-spacing:3px;color:var(--ac);margin-bottom:.5rem"><span data-i18n='type_checker'>タイプ相性チェッカー（攻撃→防御）</span></div>
     <div style="font-size:.7rem;color:var(--tx2);margin-bottom:.85rem">攻撃技のタイプが、防御側のタイプに何倍のダメージを与えるかを示します。パーティのタイプ範囲確認にも使えます。</div>
     <!-- パーティのタイプカバレッジ -->
     <div id="partyCoverage" style="margin-bottom:1rem"></div>
@@ -515,10 +706,10 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-wei
 <div class="tab-panel" id="panel-party">
   <div class="pbar">
     <div class="phdr">
-      <div class="ptitle">MY PARTY（最大6匹）</div>
+      <div class="ptitle"><span data-i18n="party_max">MY PARTY（最大6匹）</span></div>
       <div class="pacts">
-        <button class="act-btn gold" onclick="openVS()">⚔ 対戦分析</button>
-        <button class="act-btn green" onclick="saveParty()">💾 保存</button>
+        <button class="act-btn gold" onclick="openVS()"><span data-i18n='vs_btn'>対戦分析</span></button>
+        <button class="act-btn green" onclick="saveParty()"><span data-i18n='save_btn'>保存</span></button>
         <button class="act-btn red" onclick="clearParty()">× クリア</button>
       </div>
     </div>
@@ -526,7 +717,7 @@ h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,5vw,2.6rem);font-wei
     <div class="saveind" id="saveInd">✓ 保存しました</div>
     <div style="font-size:.6rem;color:var(--tx3);margin-top:.45rem">※ 保存データはこのブラウザに記録されます。</div>
   </div>
-  <button class="act-btn gold" onclick="diagParty()" style="width:100%;margin-bottom:1rem;font-size:.8rem;padding:.55rem;border-radius:8px">🩺 パーティを診断する</button>
+  <button class="act-btn gold" data-i18n="diag_btn" onclick="diagParty()" style="width:100%;margin-bottom:1rem;font-size:.8rem;padding:.55rem;border-radius:8px"><span data-i18n="diag_btn"><span data-i18n="diag_btn">🩺 パーティを診断する</span></button>
   <div id="diagCard">
     <div class="empty"><div class="eico">🩺</div><p class="etxt">パーティにポケモンを追加してから診断してください。<br>強み・弱み・立ち回り・選出パターンを診断します。</p></div>
   </div>
@@ -2004,6 +2195,37 @@ fetch('builds_db.json')
 
 const NAT_EFFECT={'さみしがり':['こうげき','ぼうぎょ'],'いじっぱり':['こうげき','とくこう'],'やんちゃ':['こうげき','とくぼう'],'ゆうかん':['こうげき','すばやさ'],'ずぶとい':['ぼうぎょ','こうげき'],'わんぱく':['ぼうぎょ','とくこう'],'のうてんき':['ぼうぎょ','とくぼう'],'のんき':['ぼうぎょ','すばやさ'],'ひかえめ':['とくこう','こうげき'],'おっとり':['とくこう','ぼうぎょ'],'うっかりや':['とくこう','とくぼう'],'れいせい':['とくこう','すばやさ'],'おくびょう':['すばやさ','こうげき'],'せっかち':['すばやさ','ぼうぎょ'],'ようき':['すばやさ','とくこう'],'むじゃき':['すばやさ','とくぼう'],'おだやか':['とくぼう','こうげき'],'おとなしい':['とくぼう','ぼうぎょ'],'しんちょう':['とくぼう','とくこう'],'なまいき':['とくぼう','すばやさ']};
 
+// 型データから使い方を自動生成
+function genAutoTip(b,p){
+  if(!b||!p)return '';
+  const tips=[];
+  const moves=b.moves||[];
+  const ev=b.ev||{};
+  const item=b.item||'';
+  const nature=b.nature||'';
+  const isPhys=p.s.a>p.s.c;
+  if(item==='きあいのタスキ')tips.push('「きあいのタスキ」で1発耐えることが前提。HP満タンで先発に出て確実に1仕事する立ち回りが基本。');
+  else if(item==='こだわりスカーフ')tips.push('「こだわりスカーフ」で素早さを1.5倍にして上から縛る。技が固定されるので相手の交代読みが重要。');
+  else if(item==='こだわりメガネ'||item==='こだわりハチマキ')tips.push(`「${item}」で火力を1.5倍に。技が固定される点に注意し、有利対面を作ってから技を選ぶ。`);
+  else if(item==='いのちのたま')tips.push('「いのちのたま」で火力×1.3。毎ターンHPが削れるため、長期戦より短期決戦を意識。');
+  else if(item==='オボンのみ'||item==='ラムのみ'||item==='ヤチェのみ')tips.push(`「${item}」でサバイバル力を高めた耐久型。粘り強く立ち回ることができる。`);
+  if((ev.s||0)>=28)tips.push(`素早さに${ev.s}振りで先手を重視。`);
+  else if((ev.b||0)>=28||(ev.d||0)>=28)tips.push('耐久に振ることで複数回行動できる。積み技との相性が良い。');
+  const SETUP=['つるぎのまい','りゅうのまい','ちょうのまい','めいそう','からをやぶる','わるだくみ','ビルドアップ'];
+  const setupMove=moves.find(m=>SETUP.includes(m));
+  if(setupMove)tips.push(`「${setupMove}」を積んで全抜きを狙う。起点作りのポケモンとセットで使うと強力。`);
+  if(moves.includes('ステルスロック'))tips.push('「ステルスロック」を初手で撒いて場を整えるのが基本。撒いた後は状況に応じて攻めるか交代するかを判断。');
+  const PRIO=['でんこうせっか','マッハパンチ','アクアジェット','バレットパンチ','かげうち','ふいうち'];
+  const prioMove=moves.find(m=>PRIO.includes(m));
+  if(prioMove)tips.push(`先制技「${prioMove}」で素早さを無視して削り・トドメが可能。終盤の詰め役として温存するのも有効。`);
+  const HEAL=['じこさいせい','なまける','タマゴうみ','ねむる','はねやすめ'];
+  const healMove=moves.find(m=>HEAL.includes(m));
+  if(healMove)tips.push(`「${healMove}」で長期戦に対応。相手の攻撃を受けながら粘り強く戦えるのが強み。`);
+  if(nature==='ようき'||nature==='おくびょう')tips.push('素早さを最大化した速さ重視型。先手攻撃を活かした積極的な立ち回りが基本戦術。');
+  else if(nature==='いじっぱり'||nature==='ひかえめ')tips.push('攻撃力を最大化した火力特化型。確定数を意識した立ち回りが重要。');
+  return tips.slice(0,3).join('');
+}
+
 function renderBuilds(name, p) {
   const builds = (typeof BUILDS_DB !== 'undefined' && BUILDS_DB[name]) ? BUILDS_DB[name] : [];
   const ikusei = typeof IKUSEI_TEXT !== 'undefined' ? IKUSEI_TEXT[name] : null;
@@ -2071,8 +2293,15 @@ function renderBuilds(name, p) {
     // 使い方
     if (b.tip) {
       const cleanTip = b.tip.replace(/。?\.\.\./g,'。').replace(/、\.\.\./g,'。').replace(/\.\.\./g,'').replace(/\s+/g,' ').trim();
-      html += '<div class="iku-label" style="margin-top:.75rem">使い方</div>';
+      html += '<div class="iku-label" style="margin-top:.75rem">'+t('tip_label')+'</div>';
       html += `<div class="build-tip">${highlightTip(cleanTip)}</div>`;
+    } else {
+      // 型データから自動生成
+      const autoTip = genAutoTip(b, DB[name]);
+      if(autoTip){
+        html += '<div class="iku-label" style="margin-top:.75rem">'+t('tip_auto')+'</div>';
+        html += `<div class="build-tip">${highlightTip(autoTip)}</div>`;
+      }
     }
 
     // 育成論テキスト（1型目のみ）
@@ -2258,7 +2487,7 @@ document.getElementById('sInp').addEventListener('keydown',e=>{
 });
 document.getElementById('sBtn').addEventListener('click',()=>{const v=document.getElementById('sInp').value.trim();if(v){const r=doSearch(v);if(r.length)showPoke(r[0].ja);}});
 document.addEventListener('click',e=>{if(!e.target.closest('.swrap'))document.getElementById('sgBox').classList.remove('open');});
-function switchMain(tab){
+function switchMain(tab){ setTimeout(applyI18n, 50);
   document.querySelectorAll('.tab-panel').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.main-tab').forEach(el=>el.classList.remove('active'));
   const panel=document.getElementById('panel-'+tab);
@@ -2410,31 +2639,55 @@ function showPoke(name){
   </div>`;
   // ===ダメージ計算機===
   const dmgCalcHtml=`<div class="dmgcalc">
-    <div class="stitle">ダメージ計算機</div>
+    <div class="stitle"><span data-i18n='sec_dmg'>ダメージ計算機</span></div>
     <div class="dmg-grid">
       <div class="dmg-col">
         <div class="dmg-col-title">⚔ 攻撃側</div>
-        <div class="dmg-row"><span class="dmg-label">攻撃/特攻実数値</span><input class="dmg-inp" id="dAtk" type="number" value="100" min="1" max="999"></div>
-        <div class="dmg-row"><span class="dmg-label">技の威力</span><input class="dmg-inp" id="dPow" type="number" value="80" min="1" max="999"></div>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_atk">攻撃/特攻実数値</span><input class="dmg-inp" id="dAtk" type="number" value="100" min="1" max="999"></div>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_pow">技の威力</span><input class="dmg-inp" id="dPow" type="number" value="80" min="1" max="999"></div>
         <div class="dmg-row"><span class="dmg-label">技タイプ</span>
           <select class="dmg-sel" id="dMoveType">
             ${ALLTYPE2.map(t=>`<option value="${t}">${tja2(t)}</option>`).join('')}
           </select>
         </div>
-        <div class="dmg-row"><span class="dmg-label">分類</span>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_cls">分類</span>
           <select class="dmg-sel" id="dCls"><option value="physical">物理</option><option value="special">特殊</option></select>
         </div>
-        <div class="dmg-row"><span class="dmg-label">タイプ一致</span>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_stab">タイプ一致</span>
           <select class="dmg-sel" id="dStab"><option value="1.5">あり(×1.5)</option><option value="2">適応力(×2)</option><option value="1" selected>なし(×1)</option></select>
         </div>
       </div>
       <div class="dmg-col">
         <div class="dmg-col-title">🛡 防御側（${escH(name)}）</div>
-        <div class="dmg-row"><span class="dmg-label">HP実数値</span><input class="dmg-inp" id="dHP" type="number" value="${Math.floor((p.s.h*2+31)*50/100)+50+10}" min="1" max="9999"></div>
-        <div class="dmg-row"><span class="dmg-label">防御/特防実数値</span><input class="dmg-inp" id="dDef" type="number" value="${Math.floor(Math.floor(((p.s.b*2+31)*50/100)+5)*1)}" min="1" max="999"></div>
-        <div class="dmg-row"><span class="dmg-label">天候</span>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_hp">HP実数値</span><input class="dmg-inp" id="dHP" type="number" value="${Math.floor((p.s.h*2+31)*50/100)+50+10}" min="1" max="9999"></div>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_def">防御/特防実数値</span><input class="dmg-inp" id="dDef" type="number" value="${Math.floor(Math.floor(((p.s.b*2+31)*50/100)+5)*1)}" min="1" max="999"></div>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_weather">天候</span>
           <select class="dmg-sel" id="dWeather">
-            <option value="1">なし</option><option value="1.5">晴れ(ほのお×1.5)</option><option value="0.5">雨(ほのお×0.5)</option><option value="1">砂嵐</option><option value="1">雪</option>
+            <option value="none">なし</option><option value="sunny">晴れ（ひでり）</option><option value="rain">雨（あめふらし）</option><option value="sand">砂嵐</option><option value="snow">雪</option>
+          </select>
+        </div>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_defability">防御側特性</span>
+          <select class="dmg-sel" id="dDefAbility">
+            <option value="none">なし</option>
+            <option value="マルチスケイル">マルチスケイル(HP満タン½)</option>
+            <option value="もふもふ">もふもふ(物理½)</option>
+            <option value="ファーコート">ファーコート(物理½)</option>
+            <option value="ばんのうがさ">ばんのうがさ(天候½)</option>
+            <option value="もらいび">もらいび(炎無効)</option>
+            <option value="ちくでん">ちくでん(電無効)</option>
+            <option value="ちょすい">ちょすい(水無効)</option>
+            <option value="ようりょくそ">ようりょくそ(草無効)</option>
+            <option value="ふしぎなまもり">ふしぎなまもり(等倍以下無効)</option>
+          </select>
+        </div>
+        <div class="dmg-row"><span class="dmg-label" data-i18n="dmg_atkitem">攻撃側持ち物</span>
+          <select class="dmg-sel" id="dAtkItem">
+            <option value="none">なし</option>
+            <option value="こだわりメガネ">こだわりメガネ(特攻×1.5)</option>
+            <option value="こだわりハチマキ">こだわりハチマキ(攻撃×1.5)</option>
+            <option value="いのちのたま">いのちのたま(×1.3)</option>
+            <option value="タイプ強化">タイプ強化アイテム(×1.2)</option>
+            <option value="たつじんのおび">たつじんのおび(弱点時×1.2)</option>
           </select>
         </div>
         <div class="dmg-row"><span class="dmg-label">タイプ相性</span>
@@ -2446,7 +2699,7 @@ function showPoke(name){
         <label class="dmg-check"><input type="checkbox" id="dBurn"> 火傷(物理×0.5)</label>
       </div>
     </div>
-    <button class="dmg-btn" onclick="calcDmg()">📊 ダメージを計算</button>
+    <button class="dmg-btn" onclick="calcDmg()"><span data-i18n="dmg_calc">📊 ダメージを計算</span></button>
     <div id="dmgResult" style="display:none"></div>
   </div>`;
   const statRows=SK.map(k=>{
@@ -2743,12 +2996,63 @@ function calcMatchup(){
     return{n,ja:p.ja,mx,tf};}).sort((a,b)=>b.mx-a.mx);
   const danH=`<div class="dan-list">${danData.map(d=>{const pct=Math.min(100,d.mx*25);const col=d.mx>=4?'var(--red)':d.mx>=2?'#f39c12':'var(--green)';const lv=d.mx>=4?'⚠⚠':d.mx>=2?'⚠':'✓';return`<div class="dan-item"><span class="dan-name">${d.ja}</span><div class="dan-bw"><div class="dan-bar" style="width:${pct}%;background:${col}"></div></div><span class="dan-lv" style="color:${col}">${lv}</span><span class="dan-r">${d.mx>=2?d.tf+'から×'+d.mx:'弱点なし'}</span></div>`;}).join('')}</div>`;
   const combos=[];if(party.length>=3){for(let a=0;a<party.length;a++)for(let b2=a+1;b2<party.length;b2++)for(let c=b2+1;c<party.length;c++)combos.push([party[a],party[b2],party[c]]);}else combos.push([...party]);
-  const scored=combos.map(trio=>{let sc=0;const reasons=[];
+  const scored=combos.map(trio=>{let sc=0;const reasons=[];const details=[];
+    // タイプ有利スコア
     for(const en of enemyTeam){const ep=DB[en];let best=0,bp='';
       for(const my of trio){let eff=0;for(const at of DB[my].types){const e=teff(at,ep.types);if(e>eff){eff=e;}}if(eff>best){best=eff;bp=DB[my].ja;}if(DB[my].s.s>ep.s.s)sc+=.5;}
       sc+=best*2;if(best>=2)reasons.push(`${bp}→${ep.ja}(×${best})`);
-    }return{trio,sc,reasons};}).sort((a,b)=>b.sc-a.sc);
-  const trioH=`<div class="trio-grid">${scored.slice(0,3).map((t,i)=>`<div class="trioc"><div class="triorank">${['🥇 最推薦','🥈 推薦','🥉 候補'][i]}</div><div class="triopks">${t.trio.map(n=>`<span class="triopill">${DB[n].ja}</span>`).join('')}</div><div class="trior">${t.reasons.length?t.reasons.join(' ／ '):'バランス型'}</div></div>`).join('')}</div>`;
+    }
+    // 素早さ上位カバー
+    const maxMySpd=Math.max(...trio.map(n=>DB[n].s.s));
+    const enFast=enemyTeam.filter(n=>DB[n].s.s>=maxMySpd).map(n=>DB[n].ja);
+    if(enFast.length===0){sc+=3;details.push('全相手に先手可能');}
+    else if(enFast.length<=2){sc+=1;details.push(`${enFast.join('・')}には後手`);}
+    else{sc-=1;details.push('多数に先手を取られる');}
+    // 弱点分散
+    const trioWeak={};ALLTYPE.forEach(t=>{trioWeak[t]=0;});
+    for(const n of trio){for(const at of ALLTYPE){if(teff(at,DB[n].types)>=2)trioWeak[at]++;}}
+    const maxW=Math.max(...Object.values(trioWeak));
+    if(maxW<=1){sc+=3;details.push('弱点分散◎');}
+    else if(maxW>=3){sc-=2;details.push(`同タイプ弱点が${maxW}体`);}
+    // 相手の脅威への対策
+    const enThreat=enemyTeam.map(en=>{let mx=0;for(const at of ALLTYPE){if(teff(at,DB[en].types)>=2)mx+=1;}return{n:en,mx};}).sort((a,b)=>b.mx-a.mx);
+    const topThreat=enThreat[0];
+    if(topThreat){
+      const canCounter=trio.some(n=>{let eff=0;for(const at of DB[n].types){const e=teff(at,DB[topThreat.n].types);if(e>eff)eff=e;}return eff>=2;});
+      if(canCounter){sc+=2;details.push(`${DB[topThreat.n].ja}に対策あり`);}
+      else{sc-=1;details.push(`${DB[topThreat.n].ja}への対策が薄い`);}
+    }
+    // 役割分担
+    const hasSpeed=trio.some(n=>DB[n].s.s>=100);
+    const hasWall=trio.some(n=>DB[n].s.b+DB[n].s.d>=350);
+    const hasAtk=trio.some(n=>Math.max(DB[n].s.a,DB[n].s.c)>=120);
+    if(hasSpeed&&hasWall&&hasAtk){sc+=3;details.push('速攻/受け/火力の3役が揃っている');}
+    else if([hasSpeed,hasWall,hasAtk].filter(Boolean).length>=2){sc+=1;}
+    return{trio,sc,reasons,details};}).sort((a,b)=>b.sc-a.sc);
+
+  const trioH=`<div class="trio-grid">${scored.slice(0,3).map((t,i)=>{
+    const roleDesc=t.trio.map(n=>{
+      const p=DB[n];const tags=[];
+      if(p.s.s>=110)tags.push(`超速(${p.s.s})`);else if(p.s.s>=95)tags.push(`速(${p.s.s})`);
+      if(Math.max(p.s.a,p.s.c)>=130)tags.push('エース');
+      if(p.s.b+p.s.d>=360)tags.push('受け');
+      // 技から役割判定
+      const SETUP=['つるぎのまい','りゅうのまい','ちょうのまい','めいそう','からをやぶる','わるだくみ'];
+      const PRIO=['でんこうせっか','マッハパンチ','アクアジェット','バレットパンチ','ふいうち'];
+      const HAZARD=['ステルスロック','まきびし','どくびし'];
+      if((p.moves||[]).some(m=>SETUP.includes(m)))tags.push('積み');
+      if((p.moves||[]).some(m=>PRIO.includes(m)))tags.push('先制');
+      if((p.moves||[]).some(m=>HAZARD.includes(m)))tags.push('ステロ');
+      const tag=tags.length?`<span style="font-size:.52rem;color:var(--tx3)">[${tags.slice(0,2).join('/')}]</span>`:'';
+      return `<span class="triopill">${p.ja}${tag}</span>`;
+    }).join('');
+    const detailHtml=t.details.length?`<div style="display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.3rem">${t.details.map(d=>`<span style="font-size:.58rem;background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:.05rem .3rem;color:var(--tx3)">▸ ${d}</span>`).join('')}</div>`:'';
+    return`<div class="trioc${i===0?' trioc-top':''}">
+      <div class="triorank">${['🥇 最推薦','🥈 推薦','🥉 候補'][i]}</div>
+      <div class="triopks">${roleDesc}</div>
+      <div class="trior">${t.reasons.length?t.reasons.join(' ／ '):'バランス型'}</div>
+      ${detailHtml}
+    </div>`;}).join('')}</div>`;
   const bestF=party.slice().sort((a,b)=>{let sa=0,sb2=0;for(const en of enemyTeam){let ma=0,mb2=0;for(const at of DB[a].types){const e=teff(at,DB[en].types);if(e>ma)ma=e;}for(const at of DB[b].types){const e=teff(at,DB[en].types);if(e>mb2)mb2=e;}sa+=ma;sb2+=mb2;}return sb2-sa;})[0];
   const wallP=party.slice().sort((a,b)=>(DB[b].s.b+DB[b].s.d)-(DB[a].s.b+DB[a].s.d))[0];
   const finP=party.slice().sort((a,b)=>DB[b].s.s-DB[a].s.s)[0];
@@ -2805,11 +3109,12 @@ function calcDmg(){
   const def=parseInt(document.getElementById('dDef').value)||100;
   const stab=parseFloat(document.getElementById('dStab').value)||1;
   const typeEff=parseFloat(document.getElementById('dTypeEff').value);
-  const weather=parseFloat(document.getElementById('dWeather').value)||1;
+  const selWeather=document.getElementById('dWeather');
   const crit=document.getElementById('dCrit').checked?1.5:1;
   const burn=document.getElementById('dBurn').checked&&document.getElementById('dCls').value==='physical'?0.5:1;
   const moveType=document.getElementById('dMoveType').value;
-  const selWeather=document.getElementById('dWeather');
+  const defAbility=document.getElementById('dDefAbility').value;
+  const atkItem=document.getElementById('dAtkItem').value;
 
   if(typeEff===0){
     const el=document.getElementById('dmgResult');
@@ -2818,48 +3123,86 @@ function calcDmg(){
     return;
   }
 
-  // 天候補正の正確な計算
+  // 天候補正
   let weatherMod=1;
   const weatherVal=selWeather.value;
-  if(weatherVal==='1.5'&&moveType==='fire')weatherMod=1.5;
-  else if(weatherVal==='0.5'&&moveType==='fire')weatherMod=0.5;
-  else if(weatherVal==='1.5'&&moveType==='water')weatherMod=0.5; // 晴れ→水半減
-  else if(weatherVal==='0.5'&&moveType==='water')weatherMod=1.5; // 雨→水1.5倍
+  if(weatherVal==='sunny'){
+    if(moveType==='fire')weatherMod=1.5;
+    else if(moveType==='water')weatherMod=0.5;
+  }else if(weatherVal==='rain'){
+    if(moveType==='water')weatherMod=1.5;
+    else if(moveType==='fire')weatherMod=0.5;
+  }else if(weatherVal==='sand'){
+    // すな特防補正はdef側で対応済み
+  }
+
+  // 特性補正（防御側）
+  let abilityMod=1;
+  const isPhysical=document.getElementById('dCls').value==='physical';
+  if(defAbility==='もふもふ'&&isPhysical)abilityMod*=0.5;
+  if(defAbility==='ファーコート'&&isPhysical)abilityMod*=0.5;
+  if(defAbility==='マルチスケイル')abilityMod*=0.5; // HP満タン想定
+  if(defAbility==='ばんのうがさ')abilityMod*=0.5;
+  if(defAbility==='こんがりボディ'&&moveType==='fire')abilityMod*=0.5;
+  if(defAbility==='もらいび'&&moveType==='fire')abilityMod=0;
+  if(defAbility==='ちくでん'&&moveType==='electric')abilityMod=0;
+  if(defAbility==='ちょすい'&&moveType==='water')abilityMod=0;
+  if(defAbility==='ようりょくそ'&&moveType==='grass')abilityMod=0;
+  if(defAbility==='ふしぎなまもり')abilityMod=(typeEff>1)?abilityMod:0;
+
+  // 持ち物補正（攻撃側）
+  let itemMod=1;
+  if(atkItem==='こだわりメガネ'&&!isPhysical)itemMod=1.5;
+  if(atkItem==='こだわりハチマキ'&&isPhysical)itemMod=1.5;
+  if(atkItem==='いのちのたま')itemMod=1.3;
+  if(atkItem==='タイプ強化'&&stab>1)itemMod=1.2;
+  if(atkItem==='たつじんのおび'&&typeEff>=2)itemMod=1.2;
+
+  if(abilityMod===0){
+    const el=document.getElementById('dmgResult');
+    el.style.display='block';
+    el.innerHTML=`<div class="dmg-result"><div class="dmg-result-main">無効（特性により無効化）</div><div class="dmg-result-range">防御側の特性「${defAbility}」によりダメージを受けません。</div></div>`;
+    return;
+  }
 
   // 基本式: ((22 * 威力 * 攻撃実数) / 防御実数) / 50 + 2
-  const base = ((22 * pow * atk) / def) / 50 + 2;
-  const dmgBase = Math.floor(base * stab * typeEff * weatherMod * crit * burn);
+  const base=((22*pow*atk)/def)/50+2;
+  const dmgBase=Math.floor(base*stab*typeEff*weatherMod*crit*burn*abilityMod*itemMod);
+  const dmgMin=Math.floor(dmgBase*0.85);
+  const dmgMax=dmgBase;
 
-  // 乱数幅: 0.85〜1.00（実際の最小〜最大）
-  const dmgMin = Math.floor(dmgBase * 0.85);
-  const dmgMax = dmgBase;
+  const pctMin=Math.round(dmgMin/hp*100);
+  const pctMax=Math.round(dmgMax/hp*100);
+  const isOHKO=pctMin>=100;
+  const is2HKO=pctMin>=50&&!isOHKO;
+  const isSafe=pctMax<=40;
 
-  const pctMin = Math.round(dmgMin / hp * 100);
-  const pctMax = Math.round(dmgMax / hp * 100);
-  const isOHKO = pctMin >= 100;
-  const is2HKO = pctMin >= 50 && !isOHKO;
-  const isSafe = pctMax <= 40;
+  const pctClass=isOHKO?'ohko':is2HKO?'twohko':'safe';
+  const pctLabel=isOHKO?'⚠ 確定1発（OHKO）':is2HKO?'⚡ 確定2発圏内':pctMax>=25?'△ 3〜4発圏内':'✓ 余裕あり';
+  const hpBarW=Math.min(100,pctMax);
+  const hpBarColor=isOHKO?'#ff4f5e':is2HKO?'#ffd566':'#30d98e';
 
-  const pctClass = isOHKO ? 'ohko' : is2HKO ? 'twohko' : 'safe';
-  const pctLabel = isOHKO ? '⚠ 確定1発（OHKO）' : is2HKO ? '⚡ 確定2発圏内' : '✓ 余裕あり';
+  // 補正の内訳
+  const modParts=[];
+  if(stab>1)modParts.push(`タイプ一致×${stab}`);
+  if(typeEff!==1)modParts.push(`タイプ相性×${typeEff}`);
+  if(weatherMod!==1)modParts.push(`天候×${weatherMod}`);
+  if(crit>1)modParts.push('急所×1.5');
+  if(burn<1)modParts.push('火傷×0.5');
+  if(abilityMod!==1)modParts.push(`特性×${abilityMod}`);
+  if(itemMod!==1)modParts.push(`持ち物×${itemMod.toFixed(1)}`);
 
-  // HP表示
-  const hpBarW = Math.min(100, pctMax);
-  const hpBarColor = isOHKO ? '#ff4f5e' : is2HKO ? '#ffd566' : '#30d98e';
-
-  const el = document.getElementById('dmgResult');
-  el.style.display = 'block';
-  el.innerHTML = `<div class="dmg-result">
+  const el=document.getElementById('dmgResult');
+  el.style.display='block';
+  el.innerHTML=`<div class="dmg-result">
     <div class="dmg-result-main">${dmgMin}〜${dmgMax} ダメージ</div>
     <div style="background:var(--bg3);border-radius:4px;height:10px;overflow:hidden;margin:.35rem 0">
       <div style="width:${hpBarW}%;height:100%;background:${hpBarColor};border-radius:4px;transition:width .5s"></div>
     </div>
-    <div class="dmg-result-range">相手HP ${hp} に対して ${pctMin}%〜${pctMax}%のダメージ</div>
+    <div class="dmg-result-range">相手HP ${hp} に対して <strong>${pctMin}%〜${pctMax}%</strong>のダメージ</div>
     <div class="dmg-result-pct ${pctClass}">${pctLabel}</div>
-    <div style="font-size:.62rem;color:var(--tx3);margin-top:.35rem">
-      基本式: ((22 × ${pow} × ${atk}) / ${def}) / 50 + 2 = ${Math.round(base)}
-      ${stab>1?` × タイプ一致${stab}`:''}${typeEff!==1?` × タイプ相性${typeEff}`:''}${weatherMod!==1?` × 天候${weatherMod}`:''}${crit>1?' × 急所1.5':''}${burn<1?' × 火傷0.5':''}
-    </div>
+    ${modParts.length?`<div style="font-size:.62rem;color:var(--tx3);margin-top:.3rem;display:flex;flex-wrap:wrap;gap:.25rem">${modParts.map(m=>`<span style="background:var(--bg3);border:1px solid var(--bd);border-radius:4px;padding:.05rem .3rem">${m}</span>`).join('')}</div>`:''}
+    <div style="font-size:.6rem;color:var(--tx3);margin-top:.3rem">基本ダメージ: ((22 × ${pow} × ${atk}) / ${def}) / 50 + 2 = ${Math.round(base)}</div>
   </div>`;
 }
 
